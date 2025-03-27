@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../build/lake-data-api.props" />
+</Project>
