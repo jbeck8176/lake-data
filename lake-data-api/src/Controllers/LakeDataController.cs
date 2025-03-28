@@ -21,20 +21,28 @@ public class LakeDataController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(string id)
     {
-        var lake = new Lake
+        try
         {
-            Id = Guid.NewGuid(),
-            Name = "Test",
-            USGSSiteId = "03090000",
-            WQDataSiteId = 55,
-            Latitude = 39.0968,
-            Longitude = -120.0324
-        };
+            var lake = new Lake
+            {
+                Id = Guid.NewGuid(),
+                Name = "Test",
+                USGSSiteId = id,
+                WQDataSiteId = 55,
+                Latitude = 39.0968,
+                Longitude = -120.0324
+            };
 
-        var lakeWaterLevel = await _lakeWaterLevelService.GetLakeWaterLevel(lake);
+            var lakeWaterLevel = await _lakeWaterLevelService.GetLakeWaterLevel(lake);
 
-        lake.LakeWaterLevel = lakeWaterLevel;
+            lake.LakeWaterLevel = lakeWaterLevel;
 
-        return Ok(lake);
+            return Ok(lake);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting lake data for {id}", id);
+            return StatusCode(500, "Internal server error");
+        }
     }
 }

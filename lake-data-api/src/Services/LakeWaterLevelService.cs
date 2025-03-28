@@ -10,8 +10,19 @@ public interface ILakeWaterLevelService
     Task<LakeWaterLevelModel> GetLakeWaterLevel(Lake lake);
 }
 
-public class USGSLakeWaterLevelService(IHttpClientFactory clientFactory): ILakeWaterLevelService
+public class USGSLakeWaterLevelService: ILakeWaterLevelService
 {
+    private readonly IHttpClientFactory _clientFactory;
+    private readonly IConfiguration _configuration;
+    private readonly ILogger<USGSLakeWaterLevelService> _logger;
+
+    public USGSLakeWaterLevelService(IHttpClientFactory clientFactory, IConfiguration configuration, ILogger<USGSLakeWaterLevelService> logger)
+    {
+        _configuration = configuration;
+        _clientFactory = clientFactory;
+        _logger = logger;
+    }
+
     public async Task<LakeWaterLevelModel> GetLakeWaterLevel(Lake lake)
     {
         var waterLevel = new LakeWaterLevelModel
@@ -39,7 +50,8 @@ public class USGSLakeWaterLevelService(IHttpClientFactory clientFactory): ILakeW
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            _logger.LogError(ex, "Error getting lake water level for {USGSSiteId}", lake.USGSSiteId);
+            throw new Exception($"Error getting lake water level for {lake.USGSSiteId}", ex);
         }
         
         return waterLevel;
