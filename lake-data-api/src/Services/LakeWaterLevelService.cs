@@ -33,8 +33,8 @@ public class USGSLakeWaterLevelService: ILakeWaterLevelService
 
         try
         {
-            using var httpClient = clientFactory.CreateClient();
-            var response = await httpClient.GetAsync($"https://waterservices.usgs.gov/nwis/iv?format=json&site={lake.USGSSiteId}&agencyCd=USGS");
+            using var httpClient = _clientFactory.CreateClient();
+            var response = await httpClient.GetAsync($"{_configuration["USGSUrl"]}?format=json&site={lake.USGSSiteId}&agencyCd=USGS");
 
             if (response.IsSuccessStatusCode)
             {
