@@ -11,7 +11,13 @@ builder.Services.AddOpenApi();
 
 // data connections
 builder.Services.AddTransient(x => new MySqlConnection(builder.Configuration.GetConnectionString("Default")));
+
+// Services
 builder.Services.AddScoped<ILakeWaterLevelService, USGSLakeWaterLevelService>();
+
+// Repositories
+builder.Services.AddScoped<ILakeRepository, LakeRepository>();
+
 builder.Services.AddHttpClient();
 
 var app = builder.Build();
