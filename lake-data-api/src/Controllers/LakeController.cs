@@ -8,7 +8,6 @@ namespace lake_data_api.Controllers;
 [Route("api/[controller]")]
 public class LakeController : ControllerBase
 {
-
     private readonly ILogger<LakeController> _logger;
     private readonly ILakeWaterLevelService _lakeWaterLevelService;
     private readonly ILakeRepository _lakeRepository;   
@@ -21,6 +20,7 @@ public class LakeController : ControllerBase
         _lakeWaterLevelService = lakeWaterLevelService;
         _lakeRepository = lakeRepository;
     }
+
     [HttpGet]
     public async Task<IActionResult> List()
     {
@@ -36,17 +36,17 @@ public class LakeController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting lakes");
+            _logger.LogError(ex, "Error getting lake list");
             return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
         }
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> Find(string id)
+    public async Task<IActionResult> FindById(string id)
     {
         try
         {
-            var lake = await _lakeRepository.Find(id);
+            var lake = await _lakeRepository.FindById(id);
             if (lake == null)
             {
                 return NotFound("Lake not found");
@@ -56,7 +56,7 @@ public class LakeController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting lake for {id}", id);
+            _logger.LogError(ex, "Error finding lake for {id}", id);
             return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
         }
     }
@@ -66,6 +66,7 @@ public class LakeController : ControllerBase
     {
         try
         {
+            // Don't trust passed in guid, generate a new one
             lake.Id = Guid.NewGuid().ToString();
             var createdLake = await _lakeRepository.Create(lake);
             if (createdLake == null)
@@ -92,7 +93,8 @@ public class LakeController : ControllerBase
             {
                 return BadRequest("Lake ID mismatch");
             }
-            var existingLake = await _lakeRepository.Find(id);
+            
+            var existingLake = await _lakeRepository.FindById(id);
             if (existingLake == null)
             {
                 return NotFound("Lake not found");

@@ -5,7 +5,7 @@ using MySqlConnector;
 
 public interface ILakeRepository
 {
-    Task<Lake> Find(string id);
+    Task<Lake> FindById(string id);
     Task<Lake> Create(Lake lake);
     Task<IEnumerable<Lake>> List();
     Task<Lake> Update(Lake lake);
@@ -21,25 +21,29 @@ public class LakeRepository : ILakeRepository
         _connection = connection;
     }
 
-    public async Task<Lake> Find(string id)
+    public async Task<Lake> FindById(string id)
     {
         var sql = "SELECT * FROM lakes WHERE Id = @Id";
+
         var lake = await _connection.QueryAsync<Lake>(sql, new {Id= id});
         if (lake == null)
         {
             throw new Exception("Lake not found");
         }
+
         return lake.FirstOrDefault()!;
     }
 
     public async Task<IEnumerable<Lake>> List()
     {
         var sql = "SELECT * FROM lakes";
+
         var lakes = await _connection.QueryAsync<Lake>(sql);
         if (lakes == null)
         {
             throw new Exception("Lakes not found");
         }
+
         return lakes;
     }
 
@@ -65,13 +69,14 @@ public class LakeRepository : ILakeRepository
     public async Task<Lake> Update(Lake lake)
     {
         var sql = "UPDATE lakes SET Name = @Name, USGSSiteId = @USGSSiteId, WQDataSiteId = @WQDataSiteId, Latitude = @Latitude, Longitude = @Longitude WHERE Id = @Id";
+
         var count = await _connection.ExecuteAsync(sql, lake);
         if (count == 0)
         {
             throw new Exception("Failed to update lake");
         }
+
         var returnLake = await _connection.QueryAsync<Lake>("SELECT * FROM lakes WHERE Id = @id", new {Id= lake.Id});
-        
         if (returnLake == null)
         {
             throw new Exception("Lake not found");
@@ -83,6 +88,7 @@ public class LakeRepository : ILakeRepository
     public async Task Delete(string id)
     {
         var sql = "DELETE FROM lakes WHERE Id = @Id";
+
         var count = await _connection.ExecuteAsync(sql, new {Id= id});
         if (count == 0)
         {
