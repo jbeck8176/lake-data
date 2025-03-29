@@ -1,1 +1,15 @@
 .DS_Store
+
+lake-data-api.Tests/bin/Debug/net9.0/appsettings.json
+
+.vscode/
+
+lake-data-api/bin/
+
+lake-data-api/obj/
+
+lake-data-api/appsettings.json
+
+lake-data-api.Tests/bin/
+
+lake-data-api.Tests/obj/
