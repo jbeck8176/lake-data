@@ -9,15 +9,11 @@ namespace lake_data_api.Controllers;
 public class LakeController : ControllerBase
 {
     private readonly ILogger<LakeController> _logger;
-    private readonly ILakeWaterLevelService _lakeWaterLevelService;
     private readonly ILakeRepository _lakeRepository;   
 
-    public LakeController(ILogger<LakeController> logger, 
-    ILakeWaterLevelService lakeWaterLevelService,
-    ILakeRepository lakeRepository)
+    public LakeController(ILogger<LakeController> logger, ILakeRepository lakeRepository)
     {
         _logger = logger;
-        _lakeWaterLevelService = lakeWaterLevelService;
         _lakeRepository = lakeRepository;
     }
 
@@ -46,7 +42,7 @@ public class LakeController : ControllerBase
     {
         try
         {
-            var lake = await _lakeRepository.FindById(id);
+            var lake = await _lakeRepository.FindByIdWithLatestLakeWaterLevel(id);
             if (lake == null)
             {
                 return NotFound("Lake not found");

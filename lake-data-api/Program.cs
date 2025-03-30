@@ -17,6 +17,7 @@ builder.Services.AddScoped<ILakeWaterLevelService, USGSLakeWaterLevelService>();
 
 // Repositories
 builder.Services.AddScoped<ILakeRepository, LakeRepository>();
+builder.Services.AddScoped<ILakeWaterLevelRepository, LakeWaterLevelRepository>();
 
 builder.Services.AddHttpClient();
 

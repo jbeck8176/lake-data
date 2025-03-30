@@ -5,6 +5,8 @@ using MySqlConnector;
 
 public interface ILakeRepository
 {
+    Task<IEnumerable<Lake>> FindByIds(string[] lakeIds);
+    Task<Lake> FindByIdWithLatestLakeWaterLevel(string id);
     Task<Lake> FindById(string id);
     Task<Lake> Create(Lake lake);
     Task<IEnumerable<Lake>> List();
@@ -20,10 +22,50 @@ public class LakeRepository : ILakeRepository
     {
         _connection = connection;
     }
+    public async Task<IEnumerable<Lake>> FindByIds(string[] lakeIds)
+    {
+        var sql = "SELECT * FROM lakes WHERE Id IN @Ids";
+
+        var lakes = await _connection.QueryAsync<Lake>(sql, new {Ids= lakeIds});
+        if (lakes == null)
+        {
+            throw new Exception("Lakes not found");
+        }
+
+        return lakes;
+    }
+
+    public async Task<Lake> FindByIdWithLatestLakeWaterLevel(string id)
+    {
+        var sql = @"SELECT TOP 1 * FROM lakes LEFT JOIN lakeWaterLevels 
+            ON lakes.Id = lakeWaterLevels.LakeId
+            AND lakeWaterLevels.CreatedAt = (
+                SELECT MAX(CreatedAt) 
+                FROM lakeWaterLevels AS lw 
+                WHERE lw.LakeId = lakes.Id
+            )";
+
+        var lake = await _connection.QueryAsync<Lake, LakeWaterLevel, Lake>(
+            sql,
+            (lake, lakeWaterLevel) =>
+            {
+                lake.LatestLakeWaterLevel = lakeWaterLevel;
+                return lake;
+            },
+            new { Id = id }
+        );
+
+        if (lake == null)
+        {
+            throw new Exception("Lake not found");
+        }
+
+        return lake.FirstOrDefault()!;
+    }
 
     public async Task<Lake> FindById(string id)
     {
-        var sql = "SELECT * FROM lakes WHERE Id = @Id";
+        var sql = "SELECT TOP 1 * FROM lakes WHERE Id = @Id";
 
         var lake = await _connection.QueryAsync<Lake>(sql, new {Id= id});
         if (lake == null)

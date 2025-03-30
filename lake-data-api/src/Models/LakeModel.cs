@@ -9,5 +9,5 @@ public class Lake
     public double Latitude { get; set; }
     public double Longitude { get; set; }
 
-    public LakeWaterLevelModel? LakeWaterLevel { get; set; }
+    public LakeWaterLevel? LatestLakeWaterLevel { get; set; }
 }
