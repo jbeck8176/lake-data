@@ -1,4 +1,5 @@
 using lake_data_api.Services;
+using MySqlConnector;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +9,16 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+// data connections
+builder.Services.AddTransient(x => new MySqlConnection(builder.Configuration.GetConnectionString("Default")));
+
+// Services
 builder.Services.AddScoped<ILakeWaterLevelService, USGSLakeWaterLevelService>();
+
+// Repositories
+builder.Services.AddScoped<ILakeRepository, LakeRepository>();
+builder.Services.AddScoped<ILakeWaterLevelRepository, LakeWaterLevelRepository>();
+
 builder.Services.AddHttpClient();
 
 var app = builder.Build();
