@@ -1,0 +1,1 @@
+//https://waterservices.usgs.gov/nwis/iv/?sites=03090500&agencyCd=USGS&startDT=2025-03-25T14:44:22.101-04:00&endDT=2025-04-01T14:44:22.101-04:00&parameterCd=00010&format=json
