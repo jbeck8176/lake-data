@@ -37,12 +37,13 @@ public class LakeRepository : ILakeRepository
 
     public async Task<Lake> FindByIdWithLatestLakeWaterLevel(string id)
     {
-        var sql = @"SELECT TOP 1 * FROM lakes LEFT JOIN lakeWaterLevels 
+        var sql = @"SELECT * FROM lakes LEFT JOIN lakeWaterLevels 
             ON lakes.Id = lakeWaterLevels.LakeId
             AND lakeWaterLevels.CreatedAt = (
                 SELECT MAX(CreatedAt) 
                 FROM lakeWaterLevels AS lw 
                 WHERE lw.LakeId = lakes.Id
+            LIMIT 1
             )";
 
         var lake = await _connection.QueryAsync<Lake, LakeWaterLevel, Lake>(
@@ -65,7 +66,7 @@ public class LakeRepository : ILakeRepository
 
     public async Task<Lake> FindById(string id)
     {
-        var sql = "SELECT TOP 1 * FROM lakes WHERE Id = @Id";
+        var sql = "SELECT * FROM lakes WHERE Id = @Id LIMIT 1";
 
         var lake = await _connection.QueryAsync<Lake>(sql, new {Id= id});
         if (lake == null)

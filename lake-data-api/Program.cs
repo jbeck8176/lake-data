@@ -14,10 +14,12 @@ builder.Services.AddTransient(x => new MySqlConnection(builder.Configuration.Get
 
 // Services
 builder.Services.AddScoped<ILakeWaterLevelService, USGSLakeWaterLevelService>();
+builder.Services.AddScoped<ILakeWaterTempService, USGSLakeWaterTempService>();
 
 // Repositories
 builder.Services.AddScoped<ILakeRepository, LakeRepository>();
 builder.Services.AddScoped<ILakeWaterLevelRepository, LakeWaterLevelRepository>();
+builder.Services.AddScoped<ILakeWaterTempRepository, LakeWaterTempRepository>();
 
 builder.Services.AddHttpClient();
 
